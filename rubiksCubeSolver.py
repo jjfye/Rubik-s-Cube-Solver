@@ -210,3 +210,78 @@ def process(operation, state):
         cv2.putText(currentCube, i, (700,50), font,1,(0,0,0), 1, cv2.LINE_AA)  
 
 
+# MAIN EXECUTION BLOCK
+'''
+Initialize an empty "currentCube" image with dimensions of 700x800
+with a black background.
+
+The while loop will capture frames from the camera and processes them until
+the program is ended. Stickers will be filled in "currentCube" depending on
+the state.
+
+The program will listen for key presses saves the current state
+depending on the key pressed to the state dictionary and adds
+the face name to checkState list.
+
+Two frames will be displayed on different windows.
+'''
+if __name__== "__main__":
+
+    currentCube = np.zeros((700,800,3), np.uint8)
+
+    while True:
+        hsv=[]
+        currentState=[]
+        ret, img = cap.read()
+        frame = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        mask = np.zeros(frame.shape, dtype=np.uint8)   
+
+        drawStickers(img,stickers,"main")
+        drawStickers(img,stickers,"current")
+        drawCurrentCubeStickers(currentCube,stickers)
+        fillStickers(currentCube,stickers,state)
+        textOnCurrentCubeStickers(currentCube,stickers)
+
+        for i in range(9):
+            hsv.append(frame[stickers["main"][i][1]+10][stickers["main"][i][0]+10])
+        
+        a=0
+        for x, y in stickers["current"]:
+            colourName=colourDetect(hsv[a][0],hsv[a][1],hsv[a][2])
+            cv2.rectangle(img,(x,y),(x+30,y+30),colour[colourName],-1)
+            a+=1
+            currentState.append(colourName)
+        
+        keyFaceMapping = {
+            ord("u"): "up",
+            ord("r"): "right",
+            ord("l"): "left",
+            ord("d"): "down",
+            ord("f"): "front",
+            ord("b"): "back",
+        }
+
+        k = cv2.waitKey(5) & 0xFF
+        if k == 27:
+            break
+        elif k in keyFaceMapping:
+            face = keyFaceMapping[k]
+            state[face] = currentState
+            checkState.append(face)
+        elif k == ord("\r"):
+            if len(set(checkState)) == 6:
+                try:
+                    solved = solve(state)
+                    if solved:
+                        operation = solved.split(" ")
+                        process(operation, state)
+                except:
+                    print("Error: There may be issues with lighting or orientation of the cube. Please try again and ensure that each face are scanned correctly.")
+            else:
+                print("You must scan all faces. Check the currentCube window for more information on the unscanned faces.")
+                print("left to scan:", 6 - len(set(checkState)))
+
+        cv2.imshow("currentCube",currentCube)
+        cv2.imshow("Rubik's Cube Scanner",img[0:5000,0:500])
+
+    cv2.destroyAllWindows()
