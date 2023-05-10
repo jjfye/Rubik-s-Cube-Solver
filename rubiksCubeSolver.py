@@ -136,3 +136,32 @@ def drawCurrentCubeStickers(frame,stickers):
                 cv2.rectangle(frame, (x,y), (x+40, y+40), (255,255,255), 2)
 
 
+# ADD TEXT LABELS TO CURRENT CUBE SCREEN STICKERS
+'''
+Goes through each name in "faceNames" and takes the text symbol "sym", text colour "col" and coordinates
+from each position in stickers and shows the text on current cube screen using "cv2.putText"
+'''
+def textOnCurrentCubeStickers(frame, stickers):
+    faceNames = ["front", "back", "left", "right", "up", "down"]
+    for name in faceNames:
+        sym, x1, y1 = textPoints[name][0][0], textPoints[name][0][1], textPoints[name][0][2]
+        cv2.putText(currentCube, sym, (x1, y1), font, 1, (0, 0, 0), 1, cv2.LINE_AA)
+                
+        sym, col, x1, y1 = textPoints[name][1][0], textPoints[name][1][1], textPoints[name][1][2], textPoints[name][1][3]             
+        cv2.putText(currentCube, sym, (x1, y1), font, 0.5, col, 1, cv2.LINE_AA)
+
+
+# COLOUR STICKERS WITH RESPECTIVE COLOURS FROM INPUT
+'''
+Iterates through the "sides" dictionary with "side" and "colour".
+Passes through position x, y in "stickers" dictionary for its current side.
+Then it essentially re-draws the square with its respective colour.
+'''
+def fillStickers(frame,stickers,sides):    
+    for side,colors in sides.items():
+        num=0
+        for x,y in stickers[side]:
+            cv2.rectangle(frame,(x,y),(x+40,y+40),colour[colors[num]],-1)
+            num+=1
+
+
