@@ -89,4 +89,50 @@ def solve(state):
     print("answer:", solution)
     return solution
 
+# DETECTING COLOURS ON CUBE USING HUE, SATURATION & VALUE
+"""
+By default this function will return white if the saturation and value does not meet the condition.
+Defined colour ranges based on its typical values for those standard rubik"s cube colours.
+It loops through colourRanges checking whether the input parameters fits into the condition or not and return a colour.
+"""
+def colourDetect(h, s, v):
+    if s < 50 and v > 50:
+        return "white"
+
+    colourRanges = [
+        (0, 10, "red"),
+        (11, 25, "orange"),
+        (26, 40, "yellow"),
+        (41, 80, "green"),
+        (81, 130, "blue"),
+    ]
+
+    for low, high, colour in colourRanges:
+        if low <= h <= high and s > 50 and v > 50:
+            return colour
+
+    return "white"
+
+
+# DRAW SQUARES AS REFERENCES ON RUBIK'S CUBE SCANNER SCREEN
+'''
+Goes through each name in "stickers" and draws a square for
+each position in stickers dictionary declared at the start.
+'''
+def drawStickers(frame,stickers,name):
+        for x, y in stickers[name]:
+            cv2.rectangle(frame, (x,y), (x+30, y+30), (0,0,0), 2)
+
+
+# DRAW SQUARES AS REFERENCES ON CURRENT CUBE SCREEN
+'''
+Goes through each name in "stick" and draws a square for
+each position in stickers dictionary declared at the start.
+'''
+def drawCurrentCubeStickers(frame,stickers):
+        stick=["front","back","left","right","up","down"]
+        for name in stick:
+            for x,y in stickers[name]:
+                cv2.rectangle(frame, (x,y), (x+40, y+40), (255,255,255), 2)
+
 
