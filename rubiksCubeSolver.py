@@ -165,3 +165,48 @@ def fillStickers(frame,stickers,sides):
             num+=1
 
 
+# SHOW SOLUTION STEP BY STEP ON SOLUTION SCREEN
+'''
+This takes a list moves as input and visually applies these to the cube's current state.
+It updates the currentCube image by rotating the specified sides according to the moves in the input list.
+After each operation, the function adds the move's text to the image and appends the updated cube state to the solution list.
+It then displays the updated cube state and waits for a keypress before continuing to next step.
+Finally, the function removes the text of the applied operation from the image before processing the next move.
+'''
+def process(operation, state):
+    replace = {
+                "F":[rotate,"front"],
+                "F2":[rotate,"front","front"],
+                "F'":[revrotate,"front"],
+                "U":[rotate,"up"],
+                "U2":[rotate,"up","up"],
+                "U'":[revrotate,"up"],
+                "L":[rotate,"left"],
+                "L2":[rotate,"left","left"],
+                "L'":[revrotate,"left"],
+                "R":[rotate,"right"],
+                "R2":[rotate,"right","right"],
+                "R'":[revrotate,"right"],
+                "D":[rotate,"down"],
+                "D2":[rotate,"down","down"],
+                "D'":[revrotate,"down"],
+                "B":[rotate,"back"],
+                "B2":[rotate,"back","back"],
+                "B'":[revrotate,"back"]           
+    }    
+    a=0
+    
+    for i in operation:
+        for j in range(len(replace[i])-1):
+            replace[i][0](state, replace[i][j+1])
+            
+        cv2.putText(currentCube, i, (700,a+50), font,1,(0,255,0), 1, cv2.LINE_AA)
+        
+        fillStickers(currentCube,stickers,state)
+        solution.append(currentCube)
+        
+        cv2.imshow("solution",currentCube)
+        cv2.waitKey()
+        cv2.putText(currentCube, i, (700,50), font,1,(0,0,0), 1, cv2.LINE_AA)  
+
+
